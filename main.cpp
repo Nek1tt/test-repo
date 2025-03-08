@@ -19,6 +19,15 @@ TEST(JapaneseTest, contains) {
     EXPECT_TRUE(candle.contains(3.0));
 }
 
+TEST(JapaneseTest, full_size) {
+    Candle candle{ 0.0, 3.0, 2.0, 3.0 };
+    EXPECT_EQ(candle.full_size(), 1.0);
+    Candle candle1{ 0.0, 3.0, 3.0, 3.0 };
+    EXPECT_EQ(candle1.full_size(), 0.0);
+    Candle candle2{ 0.0, 3.0, 4.0, 3.0 };
+    EXPECT_EQ(candle2.full_size(), 1.0);
+}
+
 int main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
