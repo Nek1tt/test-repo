@@ -28,6 +28,15 @@ TEST(JapaneseTest, full_size) {
     EXPECT_EQ(candle2.full_size(), 1.0);
 }
 
+TEST(JapaneseTest, body_size) {
+    Candle candle{ 0.0, 3.0, 2.0, 3.0 };
+    EXPECT_EQ(candle.body_size(), 3.0);
+    Candle candle1{ 1.0, 3.0, 3.0, 3.0 };
+    EXPECT_EQ(candle1.body_size(), 2.0);
+    Candle candle2{ 4.0, 3.0, 4.0, 3.0 };
+    EXPECT_EQ(candle2.body_size(), 1.0);
+}
+
 int main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
