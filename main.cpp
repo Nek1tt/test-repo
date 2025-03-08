@@ -46,6 +46,15 @@ TEST(JapaneseTest, is_red) {
     EXPECT_TRUE(candle.is_red());
 }
 
+TEST(JapaneseTest, is_green) {
+    Candle candle{ 4.0, 3.0, 2.0, 3.0 };
+    EXPECT_FALSE(candle.is_green());
+    Candle candle1{ 4.0, 3.0, 2.0, 5.0 };
+    EXPECT_TRUE(candle1.is_green());
+    Candle candle2{ 4.0, 3.0, 2.0, 4.0 };
+    EXPECT_FALSE(candle.is_green());
+}
+
 int main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
