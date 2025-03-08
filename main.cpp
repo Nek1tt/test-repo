@@ -37,6 +37,15 @@ TEST(JapaneseTest, body_size) {
     EXPECT_EQ(candle2.body_size(), 1.0);
 }
 
+TEST(JapaneseTest, is_red) {
+    Candle candle{ 4.0, 3.0, 2.0, 3.0 };
+    EXPECT_TRUE(candle.is_red());
+    Candle candle1{ 4.0, 3.0, 2.0, 5.0 };
+    EXPECT_FALSE(candle1.is_red());
+    Candle candle2{ 4.0, 3.0, 2.0, 4.0 };
+    EXPECT_TRUE(candle.is_red());
+}
+
 int main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
