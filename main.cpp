@@ -1,71 +1,61 @@
-﻿#include <vector>
+#include <vector>
 #include <functional>
 #include <iostream>
+#include <cstdlib>
+#include "candle.h"
+#include <gtest/gtest.h>
 
+TEST(JapaneseTest, body_contains) {
+    Candle candle{ 0.0, 3.0, 3.0, 3.0 };
+    EXPECT_TRUE(candle.body_contains(1.5));
+    EXPECT_FALSE(candle.body_contains(4.5));
+    EXPECT_TRUE(candle.body_contains(3.0));
 
-//массив всех тестов, который мы заполняем в функции initTests
-static std::vector<std::function<bool()>> tests;
-
-//тест 1
-bool test1()
-{
-  //пример какого-то теста
-  return 42 == (41 + 1); //passed
+TEST(JapaneseTest, contains) {
+    Candle candle{ 0.0, 3.0, 2.0, 3.0 };
+    EXPECT_TRUE(candle.contains(2.5));
+    EXPECT_FALSE(candle.contains(4.5));
+    EXPECT_TRUE(candle.contains(3.0));
 }
 
-//тест 2
-bool test2()
-{
-  //пример какого-то теста
-  return 42 != (41 + 1); //failed
+TEST(JapaneseTest, full_size) {
+    Candle candle{ 0.0, 3.0, 2.0, 3.0 };
+    EXPECT_EQ(candle.full_size(), 1.0);
+    Candle candle1{ 0.0, 3.0, 3.0, 3.0 };
+    EXPECT_EQ(candle1.full_size(), 0.0);
+    Candle candle2{ 0.0, 3.0, 4.0, 3.0 };
+    EXPECT_EQ(candle2.full_size(), 1.0);
 }
 
-//тест 3
-bool test3()
-{
-  Candle candle{ 0.0, 3.0, 3.0, 3.0 };
-
-  //пример какого-то теста
-  return candle.high == 3.0;
+TEST(JapaneseTest, body_size) {
+    Candle candle{ 0.0, 3.0, 2.0, 3.0 };
+    EXPECT_EQ(candle.body_size(), 3.0);
+    Candle candle1{ 1.0, 3.0, 3.0, 3.0 };
+    EXPECT_EQ(candle1.body_size(), 2.0);
+    Candle candle2{ 4.0, 3.0, 4.0, 3.0 };
+    EXPECT_EQ(candle2.body_size(), 1.0);
 }
 
-void initTests()
-{
-  tests.push_back(test1);
-  tests.push_back(test2);
-  tests.push_back(test3);
-  //tests.push_back(test4);
-  //tests.push_back(test5);
+TEST(JapaneseTest, is_red) {
+    Candle candle{ 4.0, 3.0, 2.0, 3.0 };
+    EXPECT_TRUE(candle.is_red());
+    Candle candle1{ 4.0, 3.0, 2.0, 5.0 };
+    EXPECT_FALSE(candle1.is_red());
+    Candle candle2{ 4.0, 3.0, 2.0, 4.0 };
+    EXPECT_TRUE(candle.is_red());
 }
 
-int launchTests()
-{
-  int total = 0;
-  int passed = 0;
-
-  for (const auto& test : tests)
-  {
-    std::cout << "test #" << (total + 1);
-    if (test())
-    {
-      passed += 1;
-      std::cout << " passed\n";
-    }
-    else
-    {
-      std::cout << " failed\n";
-    }
-    total += 1;
-  }
-
-  std::cout << "\ntests " << passed << "/" << total << " passed!" << std::endl;
-
-  //0 = success
-  return total - passed;
+TEST(JapaneseTest, is_green) {
+    Candle candle{ 4.0, 3.0, 2.0, 3.0 };
+    EXPECT_FALSE(candle.is_green());
+    Candle candle1{ 4.0, 3.0, 2.0, 5.0 };
+    EXPECT_TRUE(candle1.is_green());
+    Candle candle2{ 4.0, 3.0, 2.0, 4.0 };
+    EXPECT_FALSE(candle.is_green());
 }
 
-int main()
+int main(int argc, char** argv)
 {
-  initTests();
-  return launchTests();
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
