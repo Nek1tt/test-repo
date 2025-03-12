@@ -14,9 +14,6 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
-set(SOURCES candle.cpp main.cpp)
-add_executable(${PROJECT_NAME} ${SOURCES})
-
 set(TEST_SOURCES main.cpp)
 add_executable(hello_test ${TEST_SOURCES})
 target_link_libraries(hello_test PRIVATE GTest::gtest_main)
