@@ -10,6 +10,7 @@ TEST(JapaneseTest, body_contains) {
     EXPECT_TRUE(candle.body_contains(1.5));
     EXPECT_FALSE(candle.body_contains(4.5));
     EXPECT_TRUE(candle.body_contains(3.0));
+}
 
 TEST(JapaneseTest, contains) {
     Candle candle{ 0.0, 3.0, 2.0, 3.0 };
