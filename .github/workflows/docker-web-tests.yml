@@ -80,4 +80,5 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: v${{ steps.extract_chart_version.outputs.chart_version }}
           files: test-repo-chart-*.tgz
