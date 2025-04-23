@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-deployment
+spec:
+  selector:
+    matchLabels:
+      app: test-web
+  template:
+    metadata:
+      labels:
+        app: test-web
+    spec:
+      containers:
+        - name: test-web
+          image: nek1t/test-repo-web:latest
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: kube-config
+              mountPath: /root/.kube
+              subPath: config
+      volumes:
+        - name: kube-config
+          configMap:
+            name: kubeconfig
