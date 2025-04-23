@@ -48,3 +48,30 @@ jobs:
       - name: Test app container
         run: |
           docker run --rm nek1t/test-repo-app:latest
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.17.3
+
+      - name: Package Helm chart
+        run: helm package helm/test-repo-chart/test-repo-chart
+
+      - name: Extract chart version
+        id: extract_chart_version
+        run: |
+          VERSION=$(grep '^version:' helm/test-repo-chart/Chart.yaml | awk '{print $2}')
+          echo "chart_version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.extract_chart_version.outputs.chart_version }}
+          name: Helm chart v${{ steps.extract_chart_version.outputs.chart_version }}
+
+      - name: Upload chart to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: test-repo-chart-*.tgz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
