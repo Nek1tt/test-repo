@@ -1,5 +1,8 @@
 name: Docker Build & Publish
 
+permissions:
+  contents: write
+
 on:
   push:
     branches:
@@ -69,12 +72,12 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: v${{ steps.extract_chart_version.outputs.chart_version }}
           name: Helm chart v${{ steps.extract_chart_version.outputs.chart_version }}
 
       - name: Upload chart to Release
         uses: softprops/action-gh-release@v1
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           files: test-repo-chart-*.tgz
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
