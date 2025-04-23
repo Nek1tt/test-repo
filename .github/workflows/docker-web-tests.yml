@@ -63,7 +63,7 @@ jobs:
       - name: Extract chart version
         id: extract_chart_version
         run: |
-          VERSION=$(grep '^version:' helm/test-repo-chart/Chart.yaml | awk '{print $2}')
+          VERSION=$(grep '^version:' helm/test-repo-chart/test-repo-chart/Chart.yaml | awk '{print $2}')
           echo "chart_version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Create Release
