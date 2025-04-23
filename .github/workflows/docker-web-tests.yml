@@ -44,7 +44,9 @@ jobs:
 
       - name: Test web container
         run: |
-          docker run --rm nek1t/test-repo-web:latest nginx -t
+          docker run -d --name web-container nek1t/test-repo-web:latest
+          docker exec web-container nginx -t
+          docker stop web-container
 
       - name: Test app container
         run: |
