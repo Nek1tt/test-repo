@@ -1,0 +1,77 @@
+name: Docker Build & Publish
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Docker login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push web image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.web
+          push: true
+          tags: nek1t/test-repo-web:latest
+
+      - name: Build and push app image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.app
+          push: true
+          tags: nek1t/test-repo-app:latest
+
+      - name: Test web container
+        run: |
+          docker run --rm nek1t/test-repo-web:latest nginx -t
+
+      - name: Test app container
+        run: |
+          docker run --rm nek1t/test-repo-app:latest
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.17.3
+
+      - name: Package Helm chart
+        run: helm package helm/test-repo-chart/test-repo-chart
+
+      - name: Extract chart version
+        id: extract_chart_version
+        run: |
+          VERSION=$(grep '^version:' helm/test-repo-chart/Chart.yaml | awk '{print $2}')
+          echo "chart_version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.extract_chart_version.outputs.chart_version }}
+          name: Helm chart v${{ steps.extract_chart_version.outputs.chart_version }}
+
+      - name: Upload chart to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: test-repo-chart-*.tgz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
