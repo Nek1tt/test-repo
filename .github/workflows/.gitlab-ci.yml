@@ -1,0 +1,72 @@
+stages:
+  - build
+  - test
+  - package
+  - deploy
+
+variables:
+  DOCKER_REGISTRY: docker.io
+  WEB_IMAGE: nek1t/test-repo-web
+  APP_IMAGE: nek1t/test-repo-app
+
+build:
+  stage: build
+  image: docker:24.0.2
+  services:
+    - docker:24.0.2-dind
+  script:
+    - docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_TOKEN"
+    - docker build -f Dockerfile.web -t $WEB_IMAGE:latest .
+    - docker build -f Dockerfile.app -t $APP_IMAGE:latest .
+    - docker push $WEB_IMAGE:latest
+    - docker push $APP_IMAGE:latest
+  only:
+    - main
+
+test:
+  stage: test
+  image: docker:24.0.2
+  services:
+    - docker:24.0.2-dind
+  script:
+    - docker pull $WEB_IMAGE:latest
+    - docker pull $APP_IMAGE:latest
+    - docker run --rm $APP_IMAGE:latest
+    - docker run --rm $WEB_IMAGE:latest nginx -t
+  only:
+    - main
+
+package:
+  stage: package
+  image: alpine/helm:3.14.0
+  script:
+    - helm package helm/test-repo-chart/test-repo-chart
+    - VERSION=$(grep '^version:' helm/test-repo-chart/test-repo-chart/Chart.yaml | awk '{print $2}')
+    - echo "VERSION=$VERSION" >> variables.env
+    - mv test-repo-chart-*.tgz chart.tgz
+  artifacts:
+    paths:
+      - chart.tgz
+      - variables.env
+  only:
+    - main
+
+deploy:
+  stage: deploy
+  image: alpine/helm:3.14.0
+  dependencies:
+    - package
+  before_script:
+    - apk add --no-cache curl bash git openssh
+    - mkdir -p ~/.kube
+    - echo "$KUBE_CONFIG" | base64 -d > ~/.kube/config
+    - source variables.env
+  script:
+    - helm upgrade --install test-release chart.tgz \
+        --namespace default \
+        --set image.web.repository=$WEB_IMAGE \
+        --set image.web.tag=latest \
+        --set image.app.repository=$APP_IMAGE \
+        --set image.app.tag=latest \
+  only:
+    - main
