@@ -5,7 +5,6 @@ stages:
   - deploy
 
 variables:
-  DOCKER_REGISTRY: docker.io
   WEB_IMAGE: nek1t/test-repo-web
   APP_IMAGE: nek1t/test-repo-app
 
